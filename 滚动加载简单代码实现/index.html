@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>滚动加载</title>
+  <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<script src="jquery-3.1.1.min.js"></script>
+	<!--做的假数据-->
+	<script type="text/javascript">
+	var data=[{"data":"1"},{"data":"2"},{"data":"3"},{"data":"4"},{"data":"5"},{"data":"6"},{"data":"7"},{"data":"8"},{"data":"9"},
+{"data":"10"},{"data":"11"},{"data":"12"},{"data":"13"}
+	];
+	</script>
+    <style type="text/css">
+        .content-list{
+        	width:100%;
+        	height:60px;
+        	border-bottom:1px solid #d2d2d2;
+        	line-height:60px;
+        	text-align: center;
+        	font-size:25px;
+        }
+    </style>
+</head>
+<body>
+   <div id="DataContent">
+   		<!--数据模板-->
+   		<div class="content-list" style="display:none;" id="DataListDemo">
+   		</div>
+   </div>
+</body>
+</html>
+<script type="text/javascript">
+   //初始加载数据
+	$(function(){
+       $.each(data,function(a,b){
+       	var dataList=$("#DataListDemo").clone().removeAttr("id").css("display","").text(b.data);
+       	$("#DataContent").append(dataList);
+       })
+	})
+	//获取数据
+	function GetData(){
+		return data;
+	}
+	// var pageNumber = 2;  页数
+    var isLoading = false;
+    var lastScrollTop = 0;
+    $(window).scroll(function () {
+        if (isLoading) {
+            return;
+        }
+        var scrollTop = $(this).scrollTop();
+        if (scrollTop <= lastScrollTop) {
+            lastScrollTop = scrollTop;
+            return;
+        }
+        lastScrollTop = scrollTop;
+        var scrollHeight = $(document).height();
+        var windowHeight = $(this).height();
+        if (scrollTop + windowHeight + 10 > scrollHeight) {
+        	if(GetData()){//判断数据是否加载完毕
+        		$.each(GetData(),function(a,b){
+        	        var dataList=$("#DataListDemo").clone().removeAttr("id").css("display","").text(b.data);
+                     $("#DataContent").append(dataList);
+                 })
+        		isLoading=false;
+        	}
+        	else{//加载完毕 停止加载数据
+        		isLoading=true;
+        	}
+        }	
+    });
+</script>
